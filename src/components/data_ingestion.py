@@ -1,3 +1,6 @@
+# pyright: reportMissingModuleSource=false
+# pyright: reportShadowedImports=false
+
 import os
 import sys
 from src.exception import CustomException
@@ -51,6 +54,5 @@ class DataIngestion:
 
 
 if __name__=="__main__":
-    Obj = DataIngestion()
-    train_data,test_data=Obj.saveRawData()
+    pass
     
