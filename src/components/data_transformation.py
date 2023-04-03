@@ -15,6 +15,7 @@ from sklearn.preprocessing import OneHotEncoder,StandardScaler
 from src.exception import CustomException
 from src.logger import logging
 import os
+from src.components.model_trainer import ModelTrainer, ModelTrainerConfig
 
 from src.utils import save_object
 
@@ -124,6 +125,8 @@ class DataTransformation:
             raise CustomException(e,sys)
         
 if __name__=="__main__":
-    #Obj = DataTransformation()
-    #train,test,path = Obj.initiateDataTransformation('artifacts/train.csv','artifacts/test.csv')
-    pass
+    Obj = DataTransformation()
+    train_arr,test_arr,path = Obj.initiateDataTransformation('artifacts/train.csv','artifacts/test.csv')
+    modeltrainer=ModelTrainer()
+    print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
+    
