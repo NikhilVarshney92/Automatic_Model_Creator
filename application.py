@@ -3,14 +3,18 @@
 # pyright: reportMissingImports=false
 
 import os
-from flask import Flask,request,render_template,session
+from flask import Flask,request,render_template
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
-from werkzeug.utils import secure_filename
 import pandas as pd
+from src import constants
 
 application=Flask(__name__)
 
 app=application
+
+app.config['UPLOAD_FOLDER'] = constants.DATA_FOLDER_PATH
+# Define secret key to enable session
+app.secret_key = 'This is your secret key to utilize session in Flask'
 
 ## Route for a home page
 
@@ -18,9 +22,6 @@ app=application
 def index():
     return render_template('index.html') 
 
-app.config['UPLOAD_FOLDER'] = 'Data\\'
-# Define secret key to enable session
-app.secret_key = 'This is your secret key to utilize session in Flask'
 
 @app.route('/',  methods=["POST", "GET"])
 def uploadFile():
@@ -28,28 +29,23 @@ def uploadFile():
         # upload file flask
         uploaded_df = request.files['uploaded-file']
  
-        # Extracting uploaded data file name
-        data_filename = secure_filename(uploaded_df.filename)
- 
         # flask upload file to database (defined uploaded folder in static path)
-        uploaded_df.save(os.path.join(app.config['UPLOAD_FOLDER'], data_filename))
+        uploaded_df.save(os.path.join(app.config['UPLOAD_FOLDER'], constants.FILE_NAME))
+
+        return render_template('index.html')
+    
  
-        # Storing uploaded file path in flask session
-        session['uploaded_data_file_path'] = os.path.join(app.config['UPLOAD_FOLDER'], data_filename)
- 
-        return render_template('new_page.html')
- 
-@app.route('/show_data')
+@app.route('/viewData', methods= ['GET','POST'])
 def showData():
-    # Retrieving uploaded file path from session
-    data_file_path = session.get('uploaded_data_file_path', None)
- 
-    # read csv file in python flask (reading uploaded csv file from uploaded server location)
-    uploaded_df = pd.read_csv(data_file_path)
- 
-    # pandas dataframe to html table flask
-    uploaded_df_html = uploaded_df.to_html()
-    return render_template('show_data.html', data_var = uploaded_df_html)
+    if request.method=='GET':
+        return render_template('viewData.html')
+    else:
+        uploaded_df = pd.read_csv(constants.RAW_DATA_FILE_PATH)
+    
+        # pandas dataframe to html table flask
+        uploaded_df_html = uploaded_df.to_html()
+
+        return render_template('viewData.html', data = uploaded_df_html)
  
 
 

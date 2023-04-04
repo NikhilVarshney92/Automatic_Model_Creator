@@ -1,0 +1,6 @@
+FILE_NAME = 'DataFrame.csv'
+RAW_DATA_FILE_PATH = 'artifacts\DataFrame.csv'
+DATA_FOLDER_PATH = 'artifacts'
+CLEAN_DATA_FILE_PATH = 'artifacts\Cleaned_df.csv'
+TRAIN_DATA_FILE_PATH = 'artifacts\Train.csv'
+TEST_DATA_FILE_PATH = 'artifacts\Test.csv'

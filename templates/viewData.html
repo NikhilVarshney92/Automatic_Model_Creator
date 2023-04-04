@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Home</title>
+  <title>viewData</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -31,29 +31,13 @@
 </nav>
 
     <div class="container">
-		<h2>File Upload </h2>
-		<form id="myForm" method="POST" enctype="multipart/form-data" action="{{ url_for('uploadFile')}}">
-			<div class="form-group">
-				<label for="name">File :</label>
-                <input type="file" class="form-control" id="myFile" name="uploaded-file" accept=".csv">
-			</div>
-			<button type="submit" class="btn btn-primary">Upload file</button>
+      <form id="myForm" enctype="multipart/form-data" action="/viewData", method="POST">
+        <button type="submit" class="btn btn-primary">Show Data</button>
+        {{data | safe}}
 
-            <div class="container">
-                <div id="message"></div>
-            </div>
-		</form>
+      </form>
     </div>
-    <br>
     
-    <script>
-		$(document).ready(function() {
-			$('#myForm').submit(function(event) {
-				$('#message').html('<div style="color:green"; class="alert alert-success" role="alert">FIle submitted successfully!</div>'); // display success message
-			});
-		});
-	</script>
-
 
 </body>
 </html>
