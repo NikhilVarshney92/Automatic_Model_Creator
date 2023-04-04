@@ -15,9 +15,9 @@ from sklearn.preprocessing import OneHotEncoder,StandardScaler
 from src.exception import CustomException
 from src.logger import logging
 import os
-from src.components.model_trainer import ModelTrainer, ModelTrainerConfig
-
+from src.components.model_trainer import ModelTrainer
 from src.utils import save_object
+from src import constants
 
 @dataclass
 class DataTransformationConfig:
@@ -76,11 +76,11 @@ class DataTransformation:
             raise CustomException(e,sys)
         
 
-    def initiateDataTransformation(self,train_path,test_path):
+    def initiateDataTransformation(self):
 
         try:
-            train_df=pd.read_csv(train_path)
-            test_df=pd.read_csv(test_path)
+            train_df=pd.read_csv(constants.TRAIN_DATA_FILE_PATH)
+            test_df=pd.read_csv(constants.TEST_DATA_FILE_PATH)
 
             logging.info("Read train and test data completed")
 
@@ -119,14 +119,14 @@ class DataTransformation:
             return (
                 train_arr,
                 test_arr,
-                self.data_transformation_config.preprocessor_obj_file_path,
             )
         except Exception as e:
             raise CustomException(e,sys)
         
 if __name__=="__main__":
     Obj = DataTransformation()
-    train_arr,test_arr,path = Obj.initiateDataTransformation('artifacts/train.csv','artifacts/test.csv')
-    modeltrainer=ModelTrainer()
-    print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
+    train_arr,test_arr = Obj.initiateDataTransformation()
+    print(train_arr.shape)
+    #modeltrainer=ModelTrainer()
+    #print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
     
