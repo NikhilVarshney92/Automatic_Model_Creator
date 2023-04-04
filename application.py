@@ -32,7 +32,8 @@ def uploadFile():
         # flask upload file to database (defined uploaded folder in static path)
         uploaded_df.save(os.path.join(app.config['UPLOAD_FOLDER'], constants.FILE_NAME))
 
-        return render_template('index.html')
+        result = 1
+        return render_template('index.html', results = result)
     
  
 @app.route('/viewData', methods= ['GET','POST'])
@@ -76,5 +77,5 @@ def predict_datapoint():
     
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0")        
+    app.run(host="0.0.0.0",debug=True)        
 
