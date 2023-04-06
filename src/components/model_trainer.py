@@ -6,6 +6,7 @@ import os
 import sys
 from dataclasses import dataclass
 
+import statsmodels.api as sm
 from catboost import CatBoostRegressor
 from sklearn.ensemble import (
     AdaBoostRegressor,
@@ -30,6 +31,20 @@ class ModelTrainerConfig:
 class ModelTrainer:
     def __init__(self):
         self.model_trainer_config=ModelTrainerConfig()
+
+    def linear_regression_model(self, X_train, y_train, X_test, y_test):
+        
+        # Use OLS model for finding feature based on p-value
+        try:
+            X_new = sm.add_constant(X_train)
+            ols_model = sm.OLS(y_train,X_new)
+            temp_results = ols_model.fit()
+            p_values_columns = list((temp_results.pvalues < 0.10 ).index)
+        
+        
+        except Exception as e:
+            raise CustomException(e, sys)
+
 
 
     def initiate_model_trainer(self,train_array,test_array):
