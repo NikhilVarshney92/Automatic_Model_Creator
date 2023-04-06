@@ -3,7 +3,6 @@
 # pyright: reportMissingImports=false
 
 import sys
-from dataclasses import dataclass
 
 import numpy as np 
 import pandas as pd
@@ -19,27 +18,19 @@ from src.components.model_trainer import ModelTrainer
 from src.utils import save_object
 from src import constants
 
-@dataclass
-class DataTransformationConfig:
-    preprocessor_obj_file_path=os.path.join('artifacts',"proprocessor.pkl")
-
 class DataTransformation:
     def __init__(self):
-        self.data_transformation_config=DataTransformationConfig()
+        pass
 
     def getDataTransformer(self, df):
         '''
-        This function si responsible for data trnasformation
+        This function is responsible for Data transformer.
         
         '''
         try:
 
-            # define numerical & categorical columns
-            target_column_name="math score"
-            temp_df = df.drop(columns=[target_column_name],axis=1)
-
-            numerical_columns = [feature for feature in temp_df.columns if temp_df[feature].dtype != 'O']
-            categorical_columns = [feature for feature in temp_df.columns if temp_df[feature].dtype == 'O']
+            numerical_columns = [feature for feature in df.columns if df[feature].dtype != 'O']
+            categorical_columns = [feature for feature in df.columns if df[feature].dtype == 'O']
 
             logging.info('We have {} numerical features : {}'.format(len(numerical_columns), numerical_columns))
             logging.info('\nWe have {} categorical features : {}'.format(len(categorical_columns), categorical_columns))
@@ -49,7 +40,6 @@ class DataTransformation:
                 steps=[
                 ("imputer",SimpleImputer(strategy="median")),
                 ("scaler",StandardScaler())
-
                 ]
             )
 
@@ -65,7 +55,7 @@ class DataTransformation:
             preprocessor=ColumnTransformer(
                 [
                 ("num_pipeline",num_pipeline,numerical_columns),
-                ("cat_pipelines",cat_pipeline,categorical_columns)
+                ("cat_pipeline",cat_pipeline,categorical_columns)
 
                 ]
             )
@@ -79,34 +69,22 @@ class DataTransformation:
     def initiateDataTransformation(self):
 
         try:
-            train_df=pd.read_csv(constants.TRAIN_DATA_FILE_PATH)
-            test_df=pd.read_csv(constants.TEST_DATA_FILE_PATH)
+            x_train_df=pd.read_csv(constants.TRAIN_DATA_FILE_PATH)
+            x_test_df=pd.read_csv(constants.TEST_DATA_FILE_PATH)
 
             logging.info("Read train and test data completed")
 
             logging.info("Obtaining preprocessing object")
 
-            preprocessing_obj=self.getDataTransformer(train_df)
+            preprocessing_obj=self.getDataTransformer(x_train_df)
 
-            target_column_name="math score"
-
-            input_feature_train_df=train_df.drop(columns=[target_column_name],axis=1)
-            target_feature_train_df=train_df[target_column_name]
-
-            input_feature_test_df=test_df.drop(columns=[target_column_name],axis=1)
-            target_feature_test_df=test_df[target_column_name]
 
             logging.info(
                 f"Applying preprocessing object on training dataframe and testing dataframe."
             )
 
-            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
-
-            train_arr = np.c_[
-                input_feature_train_arr, np.array(target_feature_train_df)
-            ]
-            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+            train_arr=preprocessing_obj.fit_transform(x_train_df)
+            test_arr=preprocessing_obj.transform(x_test_df)
 
 
             logging.info(f"Saving preprocessing object.")

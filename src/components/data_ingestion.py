@@ -14,7 +14,7 @@ from src.components.data_cleaning import DataCleaning
 class DataIngestion:
 
     def __init__(self):
-        pass
+        pass 
 
     def saveRawData(self):
         '''
@@ -26,11 +26,13 @@ class DataIngestion:
             df = pd.read_csv(constants.CLEAN_DATA_FILE_PATH)
         
             logging.info("Train test split initiated")
-            train_set,test_set=train_test_split(df, test_size=0.2, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(df.drop([constants.TARGET_FEATURE], axis =1),df[constants.TARGET_FEATURE], test_size=0.2, random_state=42)
 
-            train_set.to_csv(constants.TRAIN_DATA_FILE_PATH,index=False,header=True)
+            X_train.to_csv(constants.xTRAIN_DATA_FILE_PATH,index=False,header=True)
+            X_test.to_csv(constants.xTEST_DATA_FILE_PATH,index=False,header=True)
+            y_train.to_csv(constants.yTRAIN_DATA_FILE_PATH,index=False,header=True)
+            y_test.to_csv(constants.yTEST_DATA_FILE_PATH,index=False,header=True)
 
-            test_set.to_csv(constants.TEST_DATA_FILE_PATH,index=False,header=True)
             logging.info("Ingestion of the data is completed Successfully...")
 
         
