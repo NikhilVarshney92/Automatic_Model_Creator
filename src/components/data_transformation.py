@@ -10,6 +10,8 @@ from sklearn.preprocessing import StandardScaler
 from src.exception import CustomException
 from src.logger import logging
 from src.components.model_trainer import ModelTrainer
+from src.components.data_cleaning import DataCleaning
+from src.components.data_ingestion import DataIngestion
 from src.utils import seperate_cat_num_feature
 from src import constants
 
@@ -46,9 +48,11 @@ class DataTransformation:
     def initiateDataTransformation(self):
 
         try:
+            logging.info('Reading Cleaned train and test Data ..')
             x_train_df=pd.read_csv(constants.xTRAIN_DATA_FILE_PATH)
             x_test_df=pd.read_csv(constants.xTEST_DATA_FILE_PATH)
 
+            logging.info('Seperating numerical and categorical features ..')
             numerical_columns,categorical_columns = seperate_cat_num_feature(x_train_df)
 
             transformed_x_train = self.getDataTransformer(numerical_columns, categorical_columns, x_train_df, constants.TRANSFORM_xTRAIN_DATA_FILE_PATH)
@@ -62,9 +66,13 @@ class DataTransformation:
             raise CustomException(e,sys)
         
 if __name__=="__main__":
+    
+    Obj = DataCleaning()
+    Obj.initiateDataCleaning()
+    Ovj2 = DataIngestion()
+    Ovj2.saveRawData()
     Obj = DataTransformation()
     train_arr,test_arr = Obj.initiateDataTransformation()
-    print(train_arr.shape)
     #modeltrainer=ModelTrainer()
     #print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
     

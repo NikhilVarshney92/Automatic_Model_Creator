@@ -41,9 +41,6 @@ class DataIngestion:
 
 
 if __name__=="__main__":
-    Obj = DataCleaning()
-    Obj.initiateDataCleaning()
-    Ovj2 = DataIngestion()
-    Ovj2.saveRawData()
+    
     pass
     

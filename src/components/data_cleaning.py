@@ -59,10 +59,8 @@ class DataCleaning:
             else:
                 pass
             
-            print(df.dtypes)
             logging.info('Converting Columns to their best dtypes formats')
             df = df.convert_dtypes()
-            print(df.dtypes)
 
         except Exception as e:
             raise CustomException(e,sys)
