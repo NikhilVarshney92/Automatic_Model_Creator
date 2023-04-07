@@ -2,9 +2,7 @@
 # pyright: reportShadowedImports=false
 # pyright: reportMissingImports=false
 
-import os
 import sys
-from dataclasses import dataclass
 
 import statsmodels.api as sm
 from catboost import CatBoostRegressor
@@ -14,7 +12,6 @@ from sklearn.ensemble import (
     RandomForestRegressor,
 )
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
@@ -26,13 +23,9 @@ from src import constants
 
 from src.utils import evaluate_models
 
-@dataclass
-class ModelTrainerConfig:
-    trained_model_file_path=os.path.join("artifacts","model.pkl")
-
 class ModelTrainer:
     def __init__(self):
-        self.model_trainer_config=ModelTrainerConfig()
+        pass
 
     def linear_regression_model(self, X_train, y_train, X_test, y_test):
 
@@ -53,11 +46,11 @@ class ModelTrainer:
             X_train = X_train[p_values_columns]
             X_test = X_test[p_values_columns]
 
-            train_model_score, test_model_score = evaluate_models(X_train, y_train, X_test, y_test, model, {}, 'regression')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, {}, 'regression')
 
             logging.info('Linear Regression Model runs successfully !!!')
-            print(train_model_score, test_model_score)
-            return (train_model_score, test_model_score)
+            
+            return (train_model_score_dict, test_model_score_dict)
 
         except Exception as e:
             raise CustomException(e, sys)
@@ -67,13 +60,6 @@ class ModelTrainer:
     def initiate_model_trainer(self):
         try:
             '''
-            logging.info("Split training and test input data")
-            X_train,y_train,X_test,y_test=(
-                train_array[:,:-1],
-                train_array[:,-1],
-                test_array[:,:-1],
-                test_array[:,-1]
-            )
             models = {
                 "Random Forest": RandomForestRegressor(),
                 "Decision Tree": DecisionTreeRegressor(),
@@ -151,13 +137,9 @@ class ModelTrainer:
             X_test = pd.read_csv(constants.TRANSFORM_xTEST_DATA_FILE_PATH)
             y_test = pd.read_csv(constants.yTEST_DATA_FILE_PATH)
 
-            self.linear_regression_model(self, X_train, y_train, X_test, y_test)
+            train_model_score, test_model_score = self.linear_regression_model(X_train, y_train, X_test, y_test)
 
-            return 1
-            
-
-
-
+            return (train_model_score, test_model_score)
             
         except Exception as e:
             raise CustomException(e,sys)
