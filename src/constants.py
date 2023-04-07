@@ -9,3 +9,4 @@ yTEST_DATA_FILE_PATH = 'artifacts\Y_test.csv'
 TRANSFORM_xTRAIN_DATA_FILE_PATH = 'artifacts\TRANSFORMED_X_train.csv'
 TRANSFORM_xTEST_DATA_FILE_PATH = 'artifacts\TRANSFORMED_X_test.csv'
 TARGET_FEATURE = 'math score'
+P_VALUE = 0.00000001

@@ -30,10 +30,15 @@ def save_object(file_path, obj):
 def evaluate_models(X_train, y_train, X_test, y_test, model, param, model_type):
     
     try:
+        logging.info('Finding best params for our {} model .. '.format(model))
         gs = GridSearchCV(model, param, cv=3)
         gs.fit(X_train,y_train)
         model.set_params(**gs.best_params_)
+
+        logging.info('Fitting best params in our {} model .. '.format(model))
         model.fit(X_train,y_train)
+
+        logging.info('Predicting on x_train and x_test dataset .. ')
         y_train_pred = model.predict(X_train)
         y_test_pred = model.predict(X_test)
 
@@ -63,6 +68,7 @@ def load_object(file_path):
 def metrices_regression(test, pred):
     results = dict()
     try:
+        logging.info('Creating regression metrics dictionaray .. ')
         results['mean_absolute_error'] = mean_absolute_error(test, pred)
         results['mean_squared_error'] = mean_squared_error(test, pred)
         results['mean_pinball_loss'] = mean_pinball_loss(test, pred)
@@ -79,7 +85,7 @@ def metrices_regression(test, pred):
 def metrices_classification(test, pred):
     results = dict()
     try:
-
+        logging.info('Creating Classification metrics dictionaray .. ')
         results['accuracy_score'] = accuracy_score(test, pred)
         results['f1_score'] = f1_score(test, pred)
         results['recall_score'] = recall_score(test, pred)

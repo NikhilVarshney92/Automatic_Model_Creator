@@ -18,11 +18,13 @@ from sklearn.metrics import r2_score
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
+import pandas as pd
 
 from src.exception import CustomException
 from src.logger import logging
+from src import constants
 
-from src.utils import save_object,evaluate_models
+from src.utils import evaluate_models
 
 @dataclass
 class ModelTrainerConfig:
@@ -33,22 +35,38 @@ class ModelTrainer:
         self.model_trainer_config=ModelTrainerConfig()
 
     def linear_regression_model(self, X_train, y_train, X_test, y_test):
-        
+
         # Use OLS model for finding feature based on p-value
         try:
+            logging.info('Creating Linear Regression Model ..')
             X_new = sm.add_constant(X_train)
             ols_model = sm.OLS(y_train,X_new)
             temp_results = ols_model.fit()
-            p_values_columns = list((temp_results.pvalues < 0.10 ).index)
-        
-        
+            p_values_columns = list(temp_results.pvalues[temp_results.pvalues <= constants.P_VALUE].index)
+            
+            if 'const' in p_values_columns:
+                p_values_columns.remove('const')
+            
+            model = LinearRegression()
+
+            logging.info('Selecting Features Based on p_value ..')
+            X_train = X_train[p_values_columns]
+            X_test = X_test[p_values_columns]
+
+            train_model_score, test_model_score = evaluate_models(X_train, y_train, X_test, y_test, model, {}, 'regression')
+
+            logging.info('Linear Regression Model runs successfully !!!')
+            print(train_model_score, test_model_score)
+            return (train_model_score, test_model_score)
+
         except Exception as e:
             raise CustomException(e, sys)
 
 
 
-    def initiate_model_trainer(self,train_array,test_array):
+    def initiate_model_trainer(self):
         try:
+            '''
             logging.info("Split training and test input data")
             X_train,y_train,X_test,y_test=(
                 train_array[:,:-1],
@@ -60,7 +78,6 @@ class ModelTrainer:
                 "Random Forest": RandomForestRegressor(),
                 "Decision Tree": DecisionTreeRegressor(),
                 "Gradient Boosting": GradientBoostingRegressor(),
-                "Linear Regression": LinearRegression(),
                 "XGBRegressor": XGBRegressor(),
                 "CatBoosting Regressor": CatBoostRegressor(verbose=False),
                 "AdaBoost Regressor": AdaBoostRegressor(),
@@ -85,7 +102,6 @@ class ModelTrainer:
                     # 'max_features':['auto','sqrt','log2'],
                     'n_estimators': [8,16,32,64,128,256]
                 },
-                "Linear Regression":{},
                 "XGBRegressor":{
                     'learning_rate':[.1,.01,.05,.001],
                     'n_estimators': [8,16,32,64,128,256]
@@ -128,7 +144,16 @@ class ModelTrainer:
             predicted=best_model.predict(X_test)
 
             r2_square = r2_score(y_test, predicted)
-            return r2_square
+
+            '''
+            X_train = pd.read_csv(constants.TRANSFORM_xTRAIN_DATA_FILE_PATH)
+            y_train = pd.read_csv(constants.yTRAIN_DATA_FILE_PATH)
+            X_test = pd.read_csv(constants.TRANSFORM_xTEST_DATA_FILE_PATH)
+            y_test = pd.read_csv(constants.yTEST_DATA_FILE_PATH)
+
+            self.linear_regression_model(self, X_train, y_train, X_test, y_test)
+
+            return 1
             
 
 
