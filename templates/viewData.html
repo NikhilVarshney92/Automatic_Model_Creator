@@ -18,13 +18,14 @@
     <ul class="nav navbar-nav">
       <li class="active"><a href="/">Upload Data</a></li>
       <li class="active"><a href="/viewData">View Data</a></li>
-      <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Models<span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <li><a href="/model/LinearRegression">Regression Model</a></li>
-          <li><a href="#">Logistic Model</a></li>
-          <li><a href="#">Ensemble Models</a></li>
-        </ul>
-      </li>
+      <!-- Dropdown -->
+      <li class="nav-item dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Models</a>
+          <ul class="dropdown-menu dropdown-submenu">
+            <li><a class="dropdown-item" href="/model/LinearRegression">Linear Regression</a></li>
+            <li><a class="dropdown-item" href="/model/RandomForestRegression">Random Forest Regression</a></li>
+          </ul>
+      </li>  
       <li><a href="#">Metrics</a></li>
       <li><a href="/predictdata">Prediction</a></li>
     </ul>

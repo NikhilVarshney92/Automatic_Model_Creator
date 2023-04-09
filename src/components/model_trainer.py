@@ -55,13 +55,34 @@ class ModelTrainer:
         except Exception as e:
             raise CustomException(e, sys)
 
+    def random_forest_regression_model(self, X_train, y_train, X_test, y_test):
+
+        # Use OLS model for finding feature based on p-value
+        try:
+            params_rf = {
+                    #'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
+                    'max_features':['sqrt','log2',None],
+                    'n_estimators': [8,16,32,64,128,256]
+                }
+            logging.info('Creating Random Forest Regression Model ..')
+            
+            model = RandomForestRegressor()
+
+            logging.info('Evaluating model ..')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, params_rf, 'regression')
+
+            logging.info('Random Forest Regression Model runs successfully !!!')
+            
+            return (train_model_score_dict, test_model_score_dict)
+
+        except Exception as e:
+            raise CustomException(e, sys)
 
 
-    def initiate_model_trainer(self):
+    def initiate_model_trainer(self, model_name):
         try:
             '''
             models = {
-                "Random Forest": RandomForestRegressor(),
                 "Decision Tree": DecisionTreeRegressor(),
                 "Gradient Boosting": GradientBoostingRegressor(),
                 "XGBRegressor": XGBRegressor(),
@@ -73,12 +94,6 @@ class ModelTrainer:
                     'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
                     # 'splitter':['best','random'],
                     # 'max_features':['sqrt','log2'],
-                },
-                "Random Forest":{
-                    # 'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
-                 
-                    # 'max_features':['sqrt','log2',None],
-                    'n_estimators': [8,16,32,64,128,256]
                 },
                 "Gradient Boosting":{
                     # 'loss':['squared_error', 'huber', 'absolute_error', 'quantile'],
@@ -137,7 +152,10 @@ class ModelTrainer:
             X_test = pd.read_csv(constants.TRANSFORM_xTEST_DATA_FILE_PATH)
             y_test = pd.read_csv(constants.yTEST_DATA_FILE_PATH)
 
-            train_model_score, test_model_score = self.linear_regression_model(X_train, y_train, X_test, y_test)
+            if model_name == 'LinearRegression':
+                train_model_score, test_model_score = self.linear_regression_model(X_train, y_train, X_test, y_test)
+            elif model_name == 'RandomForestRegression':
+                train_model_score, test_model_score = self.random_forest_regression_model(X_train, y_train, X_test, y_test)
 
             return (train_model_score, test_model_score)
             

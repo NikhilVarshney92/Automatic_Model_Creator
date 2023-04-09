@@ -5,9 +5,9 @@
 import os
 from flask import Flask,request,render_template
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
+from src.pipeline.train_pipeline import TrainPipeline
 import pandas as pd
 from src import constants
-from src.components.model_trainer import ModelTrainer
 
 application=Flask(__name__)
 
@@ -77,16 +77,19 @@ def predict_datapoint():
         return render_template('predict.html',results=results[0])
     
 
-@app.route('/model/LinearRegression',methods=['GET','POST'])
-def model():
+@app.route('/model/<model_name>',methods=['GET','POST'])
+def model(model_name):
     if request.method=='GET':
-        Obj = ModelTrainer()
-        result_dict,_ = Obj.initiate_model_trainer()
-        return render_template('model.html', results = result_dict)
+            train = TrainPipeline()
+            result_dict,_ = train.train_pipe(str(model_name))
+            return render_template('model.html', results = result_dict)
+
     else:
         
         return render_template('model.html')
+    
+
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0",debug=True)        
+    app.run(host="0.0.0.0")        
 
