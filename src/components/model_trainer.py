@@ -57,7 +57,6 @@ class ModelTrainer:
 
     def random_forest_regression_model(self, X_train, y_train, X_test, y_test):
 
-        # Use OLS model for finding feature based on p-value
         try:
             params_rf = {
                     #'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
@@ -77,76 +76,128 @@ class ModelTrainer:
 
         except Exception as e:
             raise CustomException(e, sys)
-
-
-    def initiate_model_trainer(self, model_name):
+        
+    def decision_tree_regression_model(self, X_train, y_train, X_test, y_test):
+        
         try:
-            '''
-            models = {
-                "Decision Tree": DecisionTreeRegressor(),
-                "Gradient Boosting": GradientBoostingRegressor(),
-                "XGBRegressor": XGBRegressor(),
-                "CatBoosting Regressor": CatBoostRegressor(verbose=False),
-                "AdaBoost Regressor": AdaBoostRegressor(),
-            }
-            params={
-                "Decision Tree": {
+            params_rf = {
                     'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
-                    # 'splitter':['best','random'],
-                    # 'max_features':['sqrt','log2'],
-                },
-                "Gradient Boosting":{
+                    'splitter':['best','random'],
+                    'max_features':['sqrt','log2'],
+                }
+            logging.info('Creating Decision tree Regression Model ..')
+            
+            model = DecisionTreeRegressor()
+
+            logging.info('Evaluating model ..')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, params_rf, 'regression')
+
+            logging.info('Decision Tree Regression Model runs successfully !!!')
+            
+            return (train_model_score_dict, test_model_score_dict)
+
+        except Exception as e:
+            raise CustomException(e, sys)
+        
+    
+    def gradientboost_regression_model(self, X_train, y_train, X_test, y_test):
+
+        try:
+            params_rf = {
                     # 'loss':['squared_error', 'huber', 'absolute_error', 'quantile'],
                     'learning_rate':[.1,.01,.05,.001],
                     'subsample':[0.6,0.7,0.75,0.8,0.85,0.9],
                     # 'criterion':['squared_error', 'friedman_mse'],
                     # 'max_features':['auto','sqrt','log2'],
                     'n_estimators': [8,16,32,64,128,256]
-                },
-                "XGBRegressor":{
+                }
+            
+            logging.info('Creating GradientBoosting Regression Model ..')
+            
+            model = GradientBoostingRegressor()
+
+            logging.info('Evaluating model ..')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, params_rf, 'regression')
+
+            logging.info('GradientBoosting Regression Model runs successfully !!!')
+            
+            return (train_model_score_dict, test_model_score_dict)
+
+        except Exception as e:
+            raise CustomException(e, sys)
+        
+
+    def XGB_regression_model(self, X_train, y_train, X_test, y_test):
+
+        try:
+            params_rf = {
                     'learning_rate':[.1,.01,.05,.001],
-                    'n_estimators': [8,16,32,64,128,256]
-                },
-                "CatBoosting Regressor":{
+                    'n_estimators': [4,8,16,32,64,128,256]
+                }
+            logging.info('Creating XGB Regression Model ..')
+            
+            model = XGBRegressor()
+
+            logging.info('Evaluating model ..')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, params_rf, 'regression')
+
+            logging.info('XGBoosting Regression Model runs successfully !!!')
+            
+            return (train_model_score_dict, test_model_score_dict)
+
+        except Exception as e:
+            raise CustomException(e, sys)
+        
+
+    def catboost_regression_model(self, X_train, y_train, X_test, y_test):
+
+        try:
+            params_rf = {
                     'depth': [6,8,10],
                     'learning_rate': [0.01, 0.05, 0.1],
                     'iterations': [30, 50, 100]
-                },
-                "AdaBoost Regressor":{
+                }
+            logging.info('Creating CATBoost Regression Model ..')
+            
+            model = CatBoostRegressor()
+
+            logging.info('Evaluating model ..')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, params_rf, 'regression')
+
+            logging.info('CATBoosting Regression Model runs successfully !!!')
+            
+            return (train_model_score_dict, test_model_score_dict)
+
+        except Exception as e:
+            raise CustomException(e, sys)
+        
+    
+    def AdaBoost_regression_model(self, X_train, y_train, X_test, y_test):
+
+        try:
+            params_rf = {
                     'learning_rate':[.1,.01,0.5,.001],
                     # 'loss':['linear','square','exponential'],
                     'n_estimators': [8,16,32,64,128,256]
-                }
-                
             }
-
-            model_report:dict=evaluate_models(X_train=X_train,y_train=y_train,X_test=X_test,y_test=y_test,
-                                             models=models,param=params)
+            logging.info('Creating ADABoost Regression Model ..')
             
-            ## To get best model score from dict
-            best_model_score = max(sorted(model_report.values()))
+            model = AdaBoostRegressor()
 
-            ## To get best model name from dict
+            logging.info('Evaluating model ..')
+            train_model_score_dict, test_model_score_dict = evaluate_models(X_train, y_train, X_test, y_test, model, params_rf, 'regression')
 
-            best_model_name = list(model_report.keys())[
-                list(model_report.values()).index(best_model_score)
-            ]
-            best_model = models[best_model_name]
+            logging.info('AdaBoost Regression Model runs successfully !!!')
+            
+            return (train_model_score_dict, test_model_score_dict)
 
-            if best_model_score<0.6:
-                raise CustomException("No best model found")
-            logging.info(f"Best found model on both training and testing dataset")
+        except Exception as e:
+            raise CustomException(e, sys)
 
-            save_object(
-                file_path=self.model_trainer_config.trained_model_file_path,
-                obj=best_model
-            )
 
-            predicted=best_model.predict(X_test)
+    def initiate_model_trainer(self, model_name):
+        try:
 
-            r2_square = r2_score(y_test, predicted)
-
-            '''
             X_train = pd.read_csv(constants.TRANSFORM_xTRAIN_DATA_FILE_PATH)
             y_train = pd.read_csv(constants.yTRAIN_DATA_FILE_PATH)
             X_test = pd.read_csv(constants.TRANSFORM_xTEST_DATA_FILE_PATH)
@@ -156,6 +207,17 @@ class ModelTrainer:
                 train_model_score, test_model_score = self.linear_regression_model(X_train, y_train, X_test, y_test)
             elif model_name == 'RandomForestRegression':
                 train_model_score, test_model_score = self.random_forest_regression_model(X_train, y_train, X_test, y_test)
+            elif model_name == 'DecisionTreeRegression':
+                train_model_score, test_model_score = self.decision_tree_regression_model(X_train, y_train, X_test, y_test)
+            elif model_name == 'GradientBoostRegression':
+                train_model_score, test_model_score = self.gradientboost_regression_model(X_train, y_train, X_test, y_test)
+            elif model_name == 'AdaBoostRegression':
+                train_model_score, test_model_score = self.AdaBoost_regression_model(X_train, y_train, X_test, y_test)
+            elif model_name == 'XGBoostRegression':
+                train_model_score, test_model_score = self.XGB_regression_model(X_train, y_train, X_test, y_test)
+            elif model_name == 'CatBoostRegression':
+                train_model_score, test_model_score = self.catboost_regression_model(X_train, y_train, X_test, y_test)
+            
 
             return (train_model_score, test_model_score)
             
