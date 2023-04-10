@@ -8,6 +8,7 @@ from src.pipeline.predict_pipeline import CustomData,PredictPipeline
 from src.pipeline.train_pipeline import TrainPipeline
 import pandas as pd
 from src import constants
+from src.logger import logging
 
 application=Flask(__name__)
 
@@ -30,8 +31,12 @@ def uploadFile():
         # upload file flask
         uploaded_df = request.files['uploaded-file']
  
-        # flask upload file to database (defined uploaded folder in static path)
+        logging.info('flask upload file to database (defined uploaded folder in static path)')
         uploaded_df.save(os.path.join(app.config['UPLOAD_FOLDER'], constants.FILE_NAME))
+
+        logging.info('Initiate Train Pipeline to data built')
+        initiate_data_obj = TrainPipeline()
+        initiate_data_obj.initiate_data_built()
 
         result = 1
         return render_template('index.html', results = result)
@@ -44,7 +49,7 @@ def showData():
     else:
         uploaded_df = pd.read_csv(constants.RAW_DATA_FILE_PATH)
     
-        # pandas dataframe to html table flask
+        logging.info('pandas dataframe to html table flask')
         uploaded_df_html = uploaded_df.to_html()
 
         return render_template('viewData.html', data = uploaded_df_html)
@@ -80,12 +85,14 @@ def predict_datapoint():
 @app.route('/model/<model_name>',methods=['GET','POST'])
 def model(model_name):
     if request.method=='GET':
+            
+            logging.info('Initiating Train pipeline to call {}'.format(str(model_name)))
             train = TrainPipeline()
             result_dict,_ = train.train_pipe(str(model_name))
-            return render_template('model.html', results = result_dict)
+
+            return render_template('model.html', model = model_name, results = result_dict)
 
     else:
-        
         return render_template('model.html')
     
 

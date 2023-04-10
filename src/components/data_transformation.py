@@ -64,15 +64,4 @@ class DataTransformation:
 
         except Exception as e:
             raise CustomException(e,sys)
-        
-if __name__=="__main__":
-    
-    Obj = DataCleaning()
-    Obj.initiateDataCleaning()
-    Ovj2 = DataIngestion()
-    Ovj2.saveRawData()
-    Obj = DataTransformation()
-    train_arr,test_arr = Obj.initiateDataTransformation()
-    #modeltrainer=ModelTrainer()
-    #print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
     

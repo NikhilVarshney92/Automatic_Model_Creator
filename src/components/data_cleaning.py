@@ -67,9 +67,3 @@ class DataCleaning:
 
 
         df.to_csv(constants.CLEAN_DATA_FILE_PATH,index=False,header=True)
-
-if __name__=="__main__":
-    #Obj = DataCleaning()
-    #df = Obj.initiateDataCleaning()
-    #print(df.head())
-    pass

@@ -5,6 +5,7 @@
 import os
 import sys
 import pickle
+import numpy as np
 # regression metrics
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, explained_variance_score, mean_pinball_loss, d2_pinball_score,d2_absolute_error_score 
 # classification metrics
@@ -32,11 +33,11 @@ def evaluate_models(X_train, y_train, X_test, y_test, model, param, model_type):
     try:
         logging.info('Finding best params for our {} model .. '.format(model))
         gs = GridSearchCV(model, param, cv=3)
-        gs.fit(X_train,y_train)
+        gs.fit(X_train,np.ravel(y_train))
         model.set_params(**gs.best_params_)
 
         logging.info('Fitting best params in our {} model .. '.format(model))
-        model.fit(X_train,y_train)
+        model.fit(X_train,np.ravel(y_train))
 
         logging.info('Predicting on x_train and x_test dataset .. ')
         y_train_pred = model.predict(X_train)
