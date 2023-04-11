@@ -6,6 +6,7 @@ import os
 import sys
 import pickle
 import numpy as np
+import pandas as pd
 # regression metrics
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, explained_variance_score, mean_pinball_loss, d2_pinball_score,d2_absolute_error_score 
 # classification metrics
@@ -28,8 +29,8 @@ def save_object(file_path, obj):
     except Exception as e:
         raise CustomException(e, sys)
     
-def evaluate_models(X_train, y_train, X_test, y_test, model, param, model_type):
-    
+def evaluate_models(X_train, y_train, X_test, y_test, model, param, model_type, results_dicts, model_name):
+    temp_dict = dict()
     try:
         logging.info('Finding best params for our {} model .. '.format(model))
         gs = GridSearchCV(model, param, cv=3)
@@ -50,9 +51,27 @@ def evaluate_models(X_train, y_train, X_test, y_test, model, param, model_type):
         elif model_type == 'classification':
             train_model_score = metrices_classification(y_train, y_train_pred)
             test_model_score = metrices_classification(y_test, y_test_pred)
+
+
+        train_result_df = pd.DataFrame(y_train)
+        train_result_df['pred_value'] = y_train_pred
+
+        test_result_df = pd.DataFrame(y_test)
+        test_result_df['pred_value'] = y_test_pred
+
+        logging.info('Saving model results in dict ..')
+        temp_dict['model'] = model
+        temp_dict['features'] = X_train.columns
+        temp_dict['best_param'] = gs.best_params_
+        temp_dict['train_score'] = train_model_score
+        temp_dict['test_score'] = test_model_score
+        temp_dict['train_result_df'] = train_result_df
+        temp_dict['test_result_df'] = test_result_df
+
+        results_dicts[model_name] = temp_dict
         
 
-        return (train_model_score, test_model_score)
+        return (results_dicts)
 
     except Exception as e:
         raise CustomException(e, sys)

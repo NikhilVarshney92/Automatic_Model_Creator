@@ -17,6 +17,7 @@ app=application
 app.config['UPLOAD_FOLDER'] = constants.DATA_FOLDER_PATH
 # Define secret key to enable session
 app.secret_key = 'This is your secret key to utilize session in Flask'
+results_dicts = dict()
 
 ## Route for a home page
 
@@ -85,12 +86,15 @@ def predict_datapoint():
 @app.route('/model/<model_name>',methods=['GET','POST'])
 def model(model_name):
     if request.method=='GET':
-            
-            logging.info('Initiating Train pipeline to call {}'.format(str(model_name)))
-            train = TrainPipeline()
-            result_dict,_ = train.train_pipe(str(model_name))
+            if str(model_name) not in results_dicts.keys():
+                logging.info('Initiating Train pipeline to call {}'.format(str(model_name)))
+                train = TrainPipeline()
+                result_dict = train.train_pipe(str(model_name), results_dicts)
+            else:
+                logging.info('Model Exists !!! Fetching diectly from results dict ..')
+                result_dict = results_dicts
 
-            return render_template('model.html', model = model_name, results = result_dict)
+            return render_template('model.html', model = model_name, results = result_dict[str(model_name)])
 
     else:
         return render_template('model.html')
@@ -98,5 +102,5 @@ def model(model_name):
 
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0")        
+    app.run(host="0.0.0.0", debug = True)        
 

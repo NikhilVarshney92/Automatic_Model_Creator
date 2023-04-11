@@ -36,12 +36,12 @@ class TrainPipeline:
             raise CustomException(sys, e)
 
 
-    def train_pipe(self, model_name):
+    def train_pipe(self, model_name, results_dicts):
         try:
             modelObj = ModelTrainer()
-            train_results, test_results = modelObj.initiate_model_trainer(model_name)
+            results = modelObj.initiate_model_trainer(model_name , results_dicts)
 
-            return (train_results, test_results)
+            return (results)
         
         except Exception as e:
             raise CustomException(sys,e)
