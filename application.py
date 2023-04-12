@@ -6,6 +6,7 @@ import os
 from flask import Flask,request,render_template
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
 from src.pipeline.train_pipeline import TrainPipeline
+from src.components.data_visualization import DataVisualization
 import pandas as pd
 from src import constants
 from src.logger import logging
@@ -99,6 +100,24 @@ def model(model_name):
     else:
         return render_template('model.html')
     
+
+@app.route('/metric/<model_name>', methods=['GET','POST'])
+def metric_visualization(model_name):
+    if request.method=='GET':
+        if str(model_name) not in results_dicts.keys():
+            logging.info('Initiating Train pipeline to call {}'.format(str(model_name)))
+            visual = DataVisualization()
+            visual.initiateVisualization(str(model_name))
+
+        else:
+            logging.info('Model Exists !!! Fetching diectly from results dict ..')
+            result_dict = results_dicts
+
+        return render_template('metric.html', model = model_name)
+
+    else:
+        return render_template('metric.html')
+
 
 
 if __name__=="__main__":

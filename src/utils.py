@@ -16,6 +16,7 @@ from sklearn.model_selection import GridSearchCV
 
 from src.exception import CustomException
 from src.logger import logging
+from src import constants
 
 def save_object(file_path, obj):
     try:
@@ -52,21 +53,29 @@ def evaluate_models(X_train, y_train, X_test, y_test, model, param, model_type, 
             train_model_score = metrices_classification(y_train, y_train_pred)
             test_model_score = metrices_classification(y_test, y_test_pred)
 
+        PATH = os.path.join(constants.RESULT_DATA_FOLDER_PATH, model_name)
+        os.makedirs(PATH, exist_ok=True)
 
+        logging.info('Creating & Saving Result dataframe .. ')
         train_result_df = pd.DataFrame(y_train)
-        train_result_df['pred_value'] = y_train_pred
+        train_result_df.rename(columns = {constants.TARGET_FEATURE:'ACTUAL'}, inplace=True)
+        train_result_df['PRED'] = y_train_pred
+        train_result_df.to_csv(PATH+'/train_result_df.csv', index=False, header=True)
 
         test_result_df = pd.DataFrame(y_test)
-        test_result_df['pred_value'] = y_test_pred
+        test_result_df.rename(columns = {constants.TARGET_FEATURE:'ACTUAL'}, inplace=True)
+        test_result_df['PRED'] = y_test_pred
+        test_result_df.to_csv(PATH+'/test_result_df.csv', index=False, header=True)
+        train_result_df.rename(columns = {constants.TARGET_FEATURE:'ACTUAL'}, inplace=True)
 
-        logging.info('Saving model results in dict ..')
-        temp_dict['model'] = model
-        temp_dict['features'] = X_train.columns
-        temp_dict['best_param'] = gs.best_params_
-        temp_dict['train_score'] = train_model_score
-        temp_dict['test_score'] = test_model_score
-        temp_dict['train_result_df'] = train_result_df
-        temp_dict['test_result_df'] = test_result_df
+        logging.info('Saving {} results in dict ..'.format(model_name))
+        temp_dict['Model'] = model
+        temp_dict['Features'] = list(X_train.columns)
+        temp_dict['Best_Params'] = gs.best_params_
+        temp_dict['Train_Score'] = train_model_score
+        temp_dict['Test_Score'] = test_model_score
+        temp_dict['Train_Result_df'] = train_result_df
+        temp_dict['Test_Result_df'] = test_result_df
 
         results_dicts[model_name] = temp_dict
         
@@ -133,6 +142,18 @@ def seperate_cat_num_feature(df):
 
 
         return (numerical_columns,categorical_columns)
+    
+    except Exception as e:
+        raise CustomException(e, sys)
+
+
+def make_folder(PATH, model_name):
+    try:
+
+        PATH = os.path.join(PATH, model_name)
+        os.makedirs(PATH, exist_ok=True)
+
+        return PATH
     
     except Exception as e:
         raise CustomException(e, sys)
